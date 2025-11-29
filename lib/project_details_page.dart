@@ -2,7 +2,6 @@ import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:protfolio/progectmodale1.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:url_launcher/url_launcher_string.dart';
 import 'package:video_player/video_player.dart';
 
 class ProjectDetailsPage extends StatefulWidget {
@@ -299,14 +298,65 @@ class _ProjectDetailsPageState extends State<ProjectDetailsPage>
                       ),
                     ),
 
-                    SizedBox(height: 40),
+                    SizedBox(height: 30),
+
+                    // المميزات الرئيسية
+                    if (widget.project.features.isNotEmpty)
+                      _buildSection(
+                        title: 'المميزات الرئيسية 🚀',
+                        content: _buildFeaturesList(
+                          widget.project.features,
+                          isTablet,
+                          icon: Icons.rocket_launch,
+                          color: Color(0xFF6A5ACD),
+                        ),
+                      ),
+
+                    SizedBox(height: 30),
+
+                    // مميزات Supabase
+                    if (widget.project.supabaseFeatures.isNotEmpty)
+                      _buildSection(
+                        title: 'مميزات Supabase ⚡',
+                        content: _buildFeaturesList(
+                          widget.project.supabaseFeatures,
+                          isTablet,
+                          icon: Icons.cloud,
+                          color: Color(0xFF3ECF8E),
+                        ),
+                      ),
+
+                    SizedBox(height: 30),
+
+                    // مخطط قاعدة البيانات
+                    if (widget.project.databaseSchema.isNotEmpty)
+                      _buildSection(
+                        title: 'مخطط قاعدة البيانات 🗄️',
+                        content: _buildDatabaseSchema(
+                          widget.project.databaseSchema,
+                          isTablet,
+                        ),
+                      ),
+
+                    SizedBox(height: 30),
+
+                    // التحديات والحلول
+                    if (widget.project.challenges.isNotEmpty &&
+                        widget.project.solutions.isNotEmpty)
+                      _buildChallengesSolutionsSection(
+                        widget.project.challenges,
+                        widget.project.solutions,
+                        isTablet,
+                      ),
+
+                    SizedBox(height: 30),
 
                     // قسم الفيديو
                     if (widget.project.videoUrl != null &&
                         widget.project.videoUrl!.isNotEmpty)
                       _buildVideoSection(isTablet),
 
-                    SizedBox(height: 50),
+                    SizedBox(height: 100),
                   ],
                 ),
               ),
@@ -386,9 +436,247 @@ class _ProjectDetailsPageState extends State<ProjectDetailsPage>
     );
   }
 
+  Widget _buildFeaturesList(
+    List<String> features,
+    bool isTablet, {
+    required IconData icon,
+    required Color color,
+  }) {
+    return Container(
+      padding: EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 15,
+            offset: Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Column(
+        children: features.map((feature) {
+          return Padding(
+            padding: EdgeInsets.symmetric(vertical: 12),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: color.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(icon, color: color, size: 18),
+                ),
+                SizedBox(width: 15),
+                Expanded(
+                  child: Text(
+                    feature,
+                    style: TextStyle(
+                      color: Color(0xFF666666),
+                      fontSize: isTablet ? 16 : 14,
+                      height: 1.5,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  Widget _buildDatabaseSchema(List<String> tables, bool isTablet) {
+    return Container(
+      padding: EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 15,
+            offset: Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Column(
+        children: tables.map((table) {
+          return Container(
+            margin: EdgeInsets.only(bottom: 12),
+            padding: EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Color(0xFFF8F9FA),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Color(0xFF6A5ACD).withOpacity(0.2)),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.storage, color: Color(0xFF6A5ACD), size: 20),
+                SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    table,
+                    style: TextStyle(
+                      color: Color(0xFF666666),
+                      fontSize: isTablet ? 15 : 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  Widget _buildChallengesSolutionsSection(
+    List<String> challenges,
+    List<String> solutions,
+    bool isTablet,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'التحديات والحلول 💡',
+          style: TextStyle(
+            fontSize: 24,
+            color: Color(0xFF6A5ACD),
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        SizedBox(height: 20),
+
+        // التحديات
+        Container(
+          margin: EdgeInsets.only(bottom: 20),
+          padding: EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Color(0xFFFFF3CD),
+            borderRadius: BorderRadius.circular(15),
+            border: Border.all(color: Color(0xFFFFC107)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.warning, color: Color(0xFFFF9800)),
+                  SizedBox(width: 8),
+                  Text(
+                    'التحديات',
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Color(0xFFE65100),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 15),
+              Column(
+                children: challenges.map((challenge) {
+                  return Padding(
+                    padding: EdgeInsets.symmetric(vertical: 8),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(
+                          Icons.arrow_left,
+                          color: Color(0xFFFF9800),
+                          size: 20,
+                        ),
+                        SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            challenge,
+                            style: TextStyle(
+                              color: Color(0xFFE65100),
+                              fontSize: isTablet ? 15 : 14,
+                              height: 1.5,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }).toList(),
+              ),
+            ],
+          ),
+        ),
+
+        // الحلول
+        Container(
+          padding: EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Color(0xFFE8F5E8),
+            borderRadius: BorderRadius.circular(15),
+            border: Border.all(color: Color(0xFF4CAF50)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.lightbulb, color: Color(0xFF4CAF50)),
+                  SizedBox(width: 8),
+                  Text(
+                    'الحلول',
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Color(0xFF2E7D32),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 15),
+              Column(
+                children: solutions.map((solution) {
+                  return Padding(
+                    padding: EdgeInsets.symmetric(vertical: 8),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(
+                          Icons.check_circle,
+                          color: Color(0xFF4CAF50),
+                          size: 20,
+                        ),
+                        SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            solution,
+                            style: TextStyle(
+                              color: Color(0xFF2E7D32),
+                              fontSize: isTablet ? 15 : 14,
+                              height: 1.5,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }).toList(),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildVideoSection(bool isTablet) {
     return _buildSection(
-      title: 'فيديو توضيحي للمشروع',
+      title: 'فيديو توضيحي للمشروع 🎥',
       content: Column(
         children: [
           if (_isVideoLoading)
@@ -478,5 +766,61 @@ class _ProjectDetailsPageState extends State<ProjectDetailsPage>
         ],
       ),
     );
+  }
+
+  Widget _buildProjectLinks() {
+    return Container(
+      padding: EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 15,
+            offset: Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'روابط المشروع 🔗',
+            style: TextStyle(
+              fontSize: 24,
+              color: Color(0xFF6A5ACD),
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          SizedBox(height: 20),
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton.icon(
+                  icon: Icon(Icons.code),
+                  label: Text('عرض الكود على GitHub'),
+                  onPressed: () => _launchURL(widget.project.projectUrl),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFF6A5ACD),
+                    foregroundColor: Colors.white,
+                    padding: EdgeInsets.symmetric(vertical: 15),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _launchURL(String url) async {
+    if (await canLaunchUrl(Uri.parse(url))) {
+      await launchUrl(Uri.parse(url));
+    }
   }
 }

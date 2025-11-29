@@ -4,10 +4,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:protfolio/CreativeCard.dart';
-
 import 'skills_page.dart';
-
-import 'about_page.dart';
 import 'projects_page.dart';
 import 'contact_page.dart';
 
@@ -17,27 +14,33 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
-  // existing controller (used for lightning)
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
-
-  // new controllers
-  late AnimationController _staggerController; // for staggered entry
-  late AnimationController _shimmerController; // for title glow
-
+  late AnimationController _staggerController;
+  late AnimationController _shimmerController;
+  late AnimationController _galaxyController;
   final ScrollController _scrollController = ScrollController();
   double _scrollOffset = 0.0;
   bool _showScrollTop = false;
 
+  // بيانات المجرة
+  final List<Star> _stars = [];
+  final List<Planet> _planets = [];
+  final Random _random = Random();
+
   @override
   void initState() {
     super.initState();
+
+    // تهيئة المجرة
+    _initializeGalaxy();
+
     FocusManager.instance.primaryFocus?.requestFocus();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       FocusScope.of(context).requestFocus(FocusNode());
     });
-    // lightning controller (kept as before)
+
     _controller = AnimationController(
       vsync: this,
       duration: Duration(seconds: 3),
@@ -53,27 +56,78 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       end: Offset(0, 0.05),
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
 
-    // staggered entry animation
     _staggerController = AnimationController(
       vsync: this,
       duration: Duration(milliseconds: 900),
     );
 
-    // shimmer/glow moving across title
     _shimmerController = AnimationController(
       vsync: this,
       duration: Duration(seconds: 2),
     )..repeat();
 
-    // scroll listener for parallax and floating button
-    _scrollController.addListener(_onScroll);
+    _galaxyController = AnimationController(
+      vsync: this,
+      duration: Duration(seconds: 20),
+    )..repeat();
 
+    _scrollController.addListener(_onScroll);
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
 
-    // start stagger a bit after build
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _staggerController.forward();
     });
+  }
+
+  void _initializeGalaxy() {
+    // إنشاء النجوم
+    for (int i = 0; i < 150; i++) {
+      _stars.add(
+        Star(
+          x: _random.nextDouble() * 400 - 200,
+          y: _random.nextDouble() * 400 - 200,
+          z: _random.nextDouble() * 1000,
+          size: _random.nextDouble() * 2 + 0.5,
+          speed: _random.nextDouble() * 0.5 + 0.1,
+        ),
+      );
+    }
+
+    // إنشاء الكواكب
+    _planets.addAll([
+      Planet(
+        x: 0,
+        y: 0,
+        size: 40,
+        color: Color(0xFF6A5ACD),
+        speed: 0.01,
+        orbitRadius: 0,
+      ),
+      Planet(
+        x: 100,
+        y: 0,
+        size: 12,
+        color: Color(0xFFFF6B6B),
+        speed: 0.02,
+        orbitRadius: 100,
+      ),
+      Planet(
+        x: 180,
+        y: 0,
+        size: 16,
+        color: Color(0xFF4ECDC4),
+        speed: 0.015,
+        orbitRadius: 180,
+      ),
+      Planet(
+        x: 250,
+        y: 0,
+        size: 14,
+        color: Color(0xFF45B7D1),
+        speed: 0.012,
+        orbitRadius: 250,
+      ),
+    ]);
   }
 
   void _onScroll() {
@@ -91,6 +145,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     _controller.dispose();
     _staggerController.dispose();
     _shimmerController.dispose();
+    _galaxyController.dispose();
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
@@ -113,7 +168,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     );
   }
 
-  // small helper for staggered animation values
   Interval _staggerInterval(int index, {int items = 4}) {
     final start = (index * 0.08);
     final end = start + 0.45;
@@ -128,19 +182,16 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final isTablet = screenWidth > 600;
-
-    // parallax translation for the avatar container (subtle)
     final double parallax = (_scrollOffset * 0.18).clamp(-40.0, 40.0);
 
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
-        backgroundColor: Color(0xFFF6F7FB),
+        backgroundColor: Color(0xFF0A0A0A),
         body: Listener(
           onPointerSignal: (pointerSignal) {
             if (pointerSignal is PointerScrollEvent) {
-              // التعامل مع سكرول التاتش باد
-              final offset = pointerSignal.scrollDelta.dy * 2; // زيادة الحساسية
+              final offset = pointerSignal.scrollDelta.dy * 2;
               _scrollController.animateTo(
                 _scrollController.offset + offset,
                 duration: Duration(milliseconds: 100),
@@ -150,20 +201,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           },
           child: Stack(
             children: [
-              // background gradient (same as before)
-              Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      Color(0xFFF8F9FA),
-                      Color(0xFFE8EAED),
-                      Color(0xFFF0F2F5),
-                    ],
-                  ),
-                ),
-              ),
+              // خلفية المجرة التفاعلية
+              _buildInteractiveGalaxy(),
 
               // Main scrollable content
               SafeArea(
@@ -209,8 +248,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                     child: FadeTransition(
                                       opacity: _fadeAnimation,
                                       child: Container(
-                                        width: isTablet ? 350 : 170,
-                                        height: isTablet ? 350 : 170,
+                                        width: isTablet ? 350 : 200,
+                                        height: isTablet ? 350 : 200,
                                         decoration: BoxDecoration(
                                           shape: BoxShape.circle,
                                           border: Border.all(
@@ -227,7 +266,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                               offset: Offset(4, 4),
                                             ),
                                             BoxShadow(
-                                              color: Colors.white,
+                                              color: Colors.white.withOpacity(
+                                                0.1,
+                                              ),
                                               blurRadius: 15,
                                               spreadRadius: 2,
                                               offset: Offset(-4, -4),
@@ -235,7 +276,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                           ],
                                           image: DecorationImage(
                                             image: AssetImage(
-                                              "assets/images/photo_2025-06-24_03-06-59.jpg",
+                                              "assets/image/photo_2025-06-24_03-06-59.jpg",
                                             ),
                                             fit: BoxFit.fitHeight,
                                           ),
@@ -270,7 +311,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    /// ------------------ اسمك مع نيون + Pulse + Slide ------------------
                                     AnimatedBuilder(
                                       animation: _staggerController,
                                       builder: (context, child) {
@@ -296,9 +336,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                       child: Stack(
                                         alignment: Alignment.center,
                                         children: [
-                                          // خلفية نيون وبلور خفيف
                                           Text(
-                                            'Akram Atiia Saad',
+                                            'Akram Atiia ',
                                             style: TextStyle(
                                               fontSize: isTablet ? 38 : 32,
                                               fontWeight: FontWeight.w900,
@@ -319,13 +358,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                               ],
                                             ),
                                           ),
-                                          // النص الرئيسي
                                           Text(
-                                            'Akram Atiia Saad',
+                                            'Akram Atiia',
                                             style: TextStyle(
                                               fontSize: isTablet ? 38 : 32,
                                               fontWeight: FontWeight.w900,
-                                              color: Color(0xFF6A5ACD),
+                                              color: Colors.white,
                                               letterSpacing: 1.2,
                                             ),
                                           ),
@@ -335,7 +373,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
                                     SizedBox(height: 16),
 
-                                    /// ------------------ لقب مطور تطبيقات + Shimmer + Glow ------------------
                                     AnimatedBuilder(
                                       animation: _shimmerController,
                                       builder: (context, child) {
@@ -349,7 +386,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                               end: Alignment(1 + shimmer, 0),
                                               colors: [
                                                 Colors.white.withOpacity(0.0),
-                                                Colors.white.withOpacity(0.7),
+                                                Color(
+                                                  0xFF6A5ACD,
+                                                ).withOpacity(0.7),
                                                 Colors.white.withOpacity(0.0),
                                               ],
                                               stops: [0.0, 0.5, 1.0],
@@ -367,15 +406,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                             style: TextStyle(
                                               fontSize: isTablet ? 36 : 32,
                                               fontWeight: FontWeight.bold,
-                                              color: Color.fromARGB(
-                                                255,
-                                                102,
-                                                86,
-                                                206,
-                                              ),
+                                              color: Colors.white,
                                             ),
                                           ),
-                                          // Glow ناعم جداً
                                           Text(
                                             'مطور تطبيقات',
                                             style: TextStyle(
@@ -399,7 +432,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                     SizedBox(height: 8),
                                     SizedBox(height: 20),
 
-                                    /// ------------------ وصف أنيق + Slide + Fade ------------------
                                     AnimatedBuilder(
                                       animation: _staggerController,
                                       builder: (context, child) {
@@ -425,7 +457,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                       child: Text(
                                         'أبتكر حلولاً رقمية فريدة لا تُنسى',
                                         style: TextStyle(
-                                          color: Color(0xFF5A5A5A),
+                                          color: Colors.white70,
                                           fontSize: isTablet ? 22 : 18,
                                           fontStyle: FontStyle.italic,
                                           fontWeight: FontWeight.w500,
@@ -451,19 +483,19 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                 (_controller.value * 3).floor() % 3;
                             final colors = [
                               [
-                                Color.fromARGB(255, 88, 32, 245),
-                                Colors.white,
-                                Color.fromARGB(255, 13, 109, 187),
+                                Color(0xFF6A5ACD),
+                                Color(0xFF9370DB),
+                                Color(0xFF6A5ACD),
                               ],
                               [
                                 Color(0xFF6A5ACD),
-                                Colors.white,
                                 Color(0xFF9370DB),
+                                Color(0xFF6A5ACD),
                               ],
                               [
-                                Color.fromARGB(255, 85, 97, 199),
-                                Colors.white,
-                                Color.fromARGB(255, 58, 95, 196),
+                                Color(0xFF6A5ACD),
+                                Color(0xFF9370DB),
+                                Color(0xFF6A5ACD),
                               ],
                             ];
                             return Stack(
@@ -516,7 +548,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 ),
               ),
 
-              // Scroll to top button - positioned in stack
+              // Scroll to top button
               Positioned(
                 bottom: 20,
                 left: 20,
@@ -527,7 +559,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                       ? FloatingActionButton(
                           onPressed: _scrollToTop,
                           backgroundColor: Color(0xFF6A5ACD),
-                          child: Icon(Icons.arrow_upward),
+                          child: Icon(Icons.arrow_upward, color: Colors.white),
                         )
                       : SizedBox.shrink(),
                 ),
@@ -539,76 +571,26 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildBottomScrollButton() {
-    return Container(
-      height: 70,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(colors: [Colors.white, Color(0xFFF8F9FA)]),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 10,
-            offset: Offset(0, -2),
-          ),
-        ],
-      ),
-      child: Center(
-        child: GestureDetector(
-          onTap: _scrollDown,
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 25, vertical: 12),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Color(0xFF6A5ACD), Color(0xFF9370DB)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(30),
-              boxShadow: [
-                BoxShadow(
-                  color: Color(0xFF6A5ACD).withOpacity(0.4),
-                  blurRadius: 15,
-                  spreadRadius: 2,
-                  offset: Offset(2, 2),
-                ),
-              ],
+  Widget _buildInteractiveGalaxy() {
+    return IgnorePointer(
+      child: AnimatedBuilder(
+        animation: _galaxyController,
+        builder: (context, child) {
+          return CustomPaint(
+            painter: GalaxyPainter(
+              stars: _stars,
+              planets: _planets,
+              time: _galaxyController.value,
             ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.arrow_downward, color: Colors.white, size: 20),
-                SizedBox(width: 10),
-                Text(
-                  'اكتشف أعمالي',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
+            size: Size.infinite,
+          );
+        },
       ),
     );
   }
 
   Widget _buildResponsiveGrid(bool isTablet) {
     final children = [
-      _hoverableCard(
-        CreativeCard(
-          title: 'نبذة عني',
-          icon: Icons.person,
-          subtitle: 'تعرف علي أكثر',
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => AboutPage()),
-            );
-          },
-        ),
-      ),
       _hoverableCard(
         CreativeCard(
           title: 'مشاريعي',
@@ -661,7 +643,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     );
   }
 
-  // Wrap any widget to give a hover-tilt + elevation on web/desktop.
   Widget _hoverableCard(Widget child) {
     if (!kIsWeb &&
         ![
@@ -669,7 +650,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           TargetPlatform.macOS,
           TargetPlatform.linux,
         ].contains(Theme.of(context).platform)) {
-      // mobile: no hover, just a small scale on tap (InkWell inside CreativeCard handles tap)
       return child;
     }
 
@@ -677,7 +657,113 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   }
 }
 
-/// small Hover wrapper widget
+// نموذج النجم
+class Star {
+  final double x, y, z, size, speed;
+
+  Star({
+    required this.x,
+    required this.y,
+    required this.z,
+    required this.size,
+    required this.speed,
+  });
+}
+
+// نموذج الكوكب
+class Planet {
+  double x, y;
+  final double size;
+  final Color color;
+  final double speed;
+  final double orbitRadius;
+
+  Planet({
+    required this.x,
+    required this.y,
+    required this.size,
+    required this.color,
+    required this.speed,
+    required this.orbitRadius,
+  });
+}
+
+// رسام المجرة
+class GalaxyPainter extends CustomPainter {
+  final List<Star> stars;
+  final List<Planet> planets;
+  final double time;
+
+  GalaxyPainter({
+    required this.stars,
+    required this.planets,
+    required this.time,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final centerX = size.width / 2;
+    final centerY = size.height / 2;
+
+    // رسم النجوم
+    for (final star in stars) {
+      final angle = time * star.speed * 2 * pi;
+      final x = centerX + star.x * cos(angle);
+      final y = centerY + star.y * sin(angle);
+
+      final paint = Paint()
+        ..color = Colors.white.withOpacity(0.8)
+        ..maskFilter = MaskFilter.blur(BlurStyle.normal, star.size);
+
+      canvas.drawCircle(Offset(x, y), star.size, paint);
+    }
+
+    // رسم الكواكب
+    for (final planet in planets) {
+      final angle = time * planet.speed * 2 * pi;
+      final x = centerX + cos(angle) * planet.orbitRadius;
+      final y = centerY + sin(angle) * planet.orbitRadius;
+
+      // الكوكب الرئيسي
+      final planetPaint = Paint()
+        ..color = planet.color
+        ..maskFilter = MaskFilter.blur(BlurStyle.normal, 10);
+
+      canvas.drawCircle(Offset(x, y), planet.size, planetPaint);
+
+      // هالة حول الكوكب
+      final haloPaint = Paint()
+        ..color = planet.color.withOpacity(0.3)
+        ..maskFilter = MaskFilter.blur(BlurStyle.normal, 20);
+
+      canvas.drawCircle(Offset(x, y), planet.size * 1.5, haloPaint);
+    }
+
+    // تأثيرات السدم
+    final nebulaPaint = Paint()
+      ..shader =
+          RadialGradient(
+            colors: [
+              Color(0xFF6A5ACD).withOpacity(0.1),
+              Color(0xFF9370DB).withOpacity(0.05),
+              Colors.transparent,
+            ],
+            stops: [0.0, 0.5, 1.0],
+          ).createShader(
+            Rect.fromCircle(
+              center: Offset(centerX, centerY),
+              radius: size.width / 2,
+            ),
+          );
+
+    canvas.drawCircle(Offset(centerX, centerY), size.width / 2, nebulaPaint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
+}
+
+// باقي الكلاسات كما هي...
 class _HoverTiltWrapper extends StatefulWidget {
   final Widget child;
   const _HoverTiltWrapper({required this.child, Key? key}) : super(key: key);
@@ -725,6 +811,7 @@ class _HoverTiltWrapperState extends State<_HoverTiltWrapper> {
             duration: Duration(milliseconds: 220),
             transform: transform,
             child: Material(
+              color: Colors.transparent,
               elevation: _hover ? 14 : 6,
               borderRadius: BorderRadius.circular(14),
               child: widget.child,
@@ -736,7 +823,6 @@ class _HoverTiltWrapperState extends State<_HoverTiltWrapper> {
   }
 }
 
-/// Wave clipper used under the title
 class WaveClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
@@ -764,7 +850,6 @@ class WaveClipper extends CustomClipper<Path> {
   bool shouldReclip(covariant CustomClipper<Path> oldClipper) => true;
 }
 
-/// Lightning clipper (kept from original)
 class _LightningClipper extends CustomClipper<Path> {
   final double animationValue;
 

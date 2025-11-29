@@ -26,9 +26,8 @@ class _CreativeCardState extends State<CreativeCard>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _scaleAnimation;
-  late Animation<double> _elevationAnimation;
-  late Animation<Color?> _colorAnimation;
   late Animation<double> _glowAnimation;
+  late Animation<Color?> _colorAnimation;
 
   final Color _defaultPrimary = Color(0xFF6A5ACD);
   final Color _defaultSecondary = Color(0xFF9370DB);
@@ -42,18 +41,14 @@ class _CreativeCardState extends State<CreativeCard>
 
     _animationController = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 400),
+      duration: Duration(milliseconds: 600),
     );
 
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.96).animate(
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.95).animate(
       CurvedAnimation(
         parent: _animationController,
         curve: Curves.easeInOutBack,
       ),
-    );
-
-    _elevationAnimation = Tween<double>(begin: 15.0, end: 30.0).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
     );
 
     _glowAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
@@ -96,7 +91,7 @@ class _CreativeCardState extends State<CreativeCard>
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final isTablet = screenWidth > 800;
+    final isTablet = screenWidth > 600;
 
     return MouseRegion(
       onEnter: _onHoverEnter,
@@ -108,46 +103,35 @@ class _CreativeCardState extends State<CreativeCard>
           return Transform.scale(
             scale: _scaleAnimation.value,
             child: Container(
-              constraints: BoxConstraints(
-                // ⬅️ إضافة constraints لتحديد الحجم
-                minHeight: isTablet ? 160 : 140,
-                maxHeight: isTablet ? 200 : 180,
-              ),
+              height: isTablet ? 180 : 160,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(25),
+                borderRadius: BorderRadius.circular(20),
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
-                  colors: [Colors.white, _colorAnimation.value!],
+                  colors: [
+                    primaryColor.withOpacity(0.15),
+                    primaryColor.withOpacity(0.05),
+                  ],
+                ),
+                border: Border.all(
+                  color: primaryColor.withOpacity(0.25),
+                  width: 1.5,
                 ),
                 boxShadow: [
-                  // Shadow principal
                   BoxShadow(
                     color: primaryColor.withOpacity(
-                      0.25 * _glowAnimation.value,
+                      0.15 * _glowAnimation.value,
                     ),
-                    blurRadius: _elevationAnimation.value,
-                    spreadRadius: 2,
-                    offset: Offset(6, 6),
+                    blurRadius: 20,
+                    offset: Offset(0, 8),
                   ),
-                  // Inner glow
                   BoxShadow(
-                    color: Colors.white,
-                    blurRadius: 15,
-                    spreadRadius: -5,
-                    offset: Offset(-5, -5),
-                  ),
-                  // Ambient shadow
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.black.withOpacity(0.1),
                     blurRadius: 10,
                     offset: Offset(0, 4),
                   ),
                 ],
-                border: Border.all(
-                  color: primaryColor.withOpacity(0.15),
-                  width: 1.5,
-                ),
               ),
               child: Material(
                 color: Colors.transparent,
@@ -155,7 +139,7 @@ class _CreativeCardState extends State<CreativeCard>
                   onTapDown: _onTapDown,
                   onTapUp: _onTapUp,
                   onTapCancel: _onTapCancel,
-                  borderRadius: BorderRadius.circular(25),
+                  borderRadius: BorderRadius.circular(20),
                   highlightColor: primaryColor.withOpacity(0.1),
                   splashColor: primaryColor.withOpacity(0.2),
                   child: Stack(
@@ -164,13 +148,13 @@ class _CreativeCardState extends State<CreativeCard>
                       Positioned.fill(
                         child: Container(
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(25),
+                            borderRadius: BorderRadius.circular(20),
                             gradient: RadialGradient(
                               center: Alignment.topRight,
                               radius: 1.5,
                               colors: [
                                 primaryColor.withOpacity(
-                                  0.03 * _glowAnimation.value,
+                                  0.08 * _glowAnimation.value,
                                 ),
                                 Colors.transparent,
                               ],
@@ -184,11 +168,11 @@ class _CreativeCardState extends State<CreativeCard>
                         top: 0,
                         right: 0,
                         child: Container(
-                          width: 60,
-                          height: 60,
+                          width: 80,
+                          height: 80,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.only(
-                              topRight: Radius.circular(25),
+                              topRight: Radius.circular(20),
                               bottomLeft: Radius.circular(40),
                             ),
                             gradient: LinearGradient(
@@ -206,85 +190,103 @@ class _CreativeCardState extends State<CreativeCard>
                       ),
 
                       // Main content
-                      Center(
-                        child: Container(
-                          padding: EdgeInsets.all(isTablet ? 25.0 : 20.0),
-                          constraints: BoxConstraints(
-                            minHeight: isTablet ? 160 : 140,
-                            maxHeight: isTablet
-                                ? 200
-                                : 180, // ⬅️ منع التمدد الزائد
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              // Icon container with enhanced design
-                              Container(
-                                padding: EdgeInsets.all(isTablet ? 16 : 14),
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  gradient: LinearGradient(
-                                    colors: [primaryColor, secondaryColor],
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight,
+                      Padding(
+                        padding: EdgeInsets.all(isTablet ? 20.0 : 16.0),
+                        child: Row(
+                          children: [
+                            // Icon container with enhanced design
+                            Container(
+                              width: isTablet ? 70 : 60,
+                              height: isTablet ? 70 : 60,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                gradient: LinearGradient(
+                                  colors: [primaryColor, secondaryColor],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: primaryColor.withOpacity(
+                                      0.4 * _glowAnimation.value,
+                                    ),
+                                    blurRadius: 15,
+                                    offset: Offset(3, 3),
                                   ),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: primaryColor.withOpacity(
-                                        0.4 * _glowAnimation.value,
+                                ],
+                              ),
+                              child: Icon(
+                                widget.icon,
+                                size: isTablet ? 30 : 25,
+                                color: Colors.white,
+                              ),
+                            ),
+
+                            SizedBox(width: 16),
+
+                            // Text content
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    widget.title,
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: isTablet ? 20 : 18,
+                                      fontWeight: FontWeight.bold,
+                                      height: 1.2,
+                                    ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+
+                                  SizedBox(height: 6),
+
+                                  Text(
+                                    widget.subtitle,
+                                    style: TextStyle(
+                                      color: Colors.white70,
+                                      fontSize: isTablet ? 14 : 13,
+                                      height: 1.4,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+
+                                  SizedBox(height: 10),
+
+                                  // Progress bar-like element
+                                  Container(
+                                    height: 4,
+                                    width: 60,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(2),
+                                      gradient: LinearGradient(
+                                        colors: [primaryColor, secondaryColor],
                                       ),
-                                      blurRadius: 15,
-                                      offset: Offset(3, 3),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: primaryColor.withOpacity(0.4),
+                                          blurRadius: 6,
+                                          spreadRadius: 1,
+                                        ),
+                                      ],
                                     ),
-                                    BoxShadow(
-                                      color: Colors.white.withOpacity(0.5),
-                                      blurRadius: 10,
-                                      offset: Offset(-3, -3),
-                                    ),
-                                  ],
-                                ),
-                                child: Icon(
-                                  widget.icon,
-                                  size: isTablet ? 32 : 28,
-                                  color: Colors.white,
-                                ),
+                                  ),
+                                ],
                               ),
+                            ),
 
-                              SizedBox(height: isTablet ? 16 : 12),
-
-                              // Title with better typography
-                              Text(
-                                widget.title,
-                                style: TextStyle(
-                                  color: primaryColor,
-                                  fontSize: isTablet ? 18 : 16,
-                                  fontWeight: FontWeight.w800,
-                                  height: 1.2,
-                                  letterSpacing: -0.5,
-                                ),
-                                textAlign: TextAlign.center,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-
-                              SizedBox(height: isTablet ? 8 : 6),
-
-                              // Subtitle with improved styling
-                              Text(
-                                widget.subtitle,
-                                style: TextStyle(
-                                  color: Color(0xFF666666),
-                                  fontSize: isTablet ? 15 : 13,
-                                  height: 1.4,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                                textAlign: TextAlign.center,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ],
-                          ),
+                            // Arrow icon
+                            Icon(
+                              Icons.arrow_back_ios,
+                              color: primaryColor,
+                              size: isTablet ? 18 : 16,
+                            ),
+                          ],
                         ),
                       ),
                     ],

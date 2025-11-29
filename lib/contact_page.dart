@@ -6,76 +6,73 @@ class ContactPage extends StatefulWidget {
   _ContactPageState createState() => _ContactPageState();
 }
 
-class _ContactPageState extends State<ContactPage>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _animation;
-
+class _ContactPageState extends State<ContactPage> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _messageController = TextEditingController();
 
   final List<ContactMethod> contactMethods = [
     ContactMethod(
+      icon: Icons.phone,
+      title: 'الواتساب',
+      info: '+20 1154045964',
+      color: Color(0xFF25D366),
+      action: () => _launchWhatsApp(),
+    ),
+    ContactMethod(
       icon: Icons.email,
       title: 'البريد الإلكتروني',
-      info: 'mohamed.dev@example.com',
-      color: Color(0xFF6A5ACD),
+      info: 'akramatiia@gmail.com',
+      color: Color(0xFFEA4335),
       action: () => _launchEmail(),
     ),
     ContactMethod(
       icon: Icons.phone,
-      title: 'الهاتف',
-      info: '+20 123 456 7890',
-      color: Color(0xFF9370DB),
+      title: 'مكالمة هاتفية',
+      info: '01154045964',
+      color: Color(0xFF34A853),
       action: () => _launchPhone(),
     ),
     ContactMethod(
       icon: Icons.link,
       title: 'LinkedIn',
-      info: 'linkedin.com/in/mohamed-dev',
-      color: Color(0xFF6A5ACD),
+      info: 'www.linkedin.com/in/akram-atiia-2ba2a335b',
+      color: Color(0xFF0077B5),
       action: () => _launchLinkedIn(),
     ),
     ContactMethod(
       icon: Icons.code,
       title: 'GitHub',
       info: 'github.com/mohamed-dev',
-      color: Color(0xFF9370DB),
+      color: Color(0xFF333333),
       action: () => _launchGitHub(),
+    ),
+    ContactMethod(
+      icon: Icons.description,
+      title: 'السيرة الذاتية',
+      info: 'تحميل CV PDF',
+      color: Color(0xFF6A5ACD),
+      action: () => _downloadCV(),
     ),
   ];
 
-  @override
-  void initState() {
-    super.initState();
-
-    _controller = AnimationController(
-      vsync: this,
-      duration: Duration(milliseconds: 1000),
+  static Future<void> _launchWhatsApp() async {
+    final Uri whatsappUri = Uri.parse(
+      'https://wa.me/201154045964?text=مرحباً%20أرغب%20في%20التواصل%20معك%20بخصوص%20فرصة%20عمل',
     );
-
-    _animation = CurvedAnimation(parent: _controller, curve: Curves.easeInOut);
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _controller.forward();
-    });
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    _nameController.dispose();
-    _emailController.dispose();
-    _messageController.dispose();
-    super.dispose();
+    if (await canLaunchUrl(whatsappUri)) {
+      await launchUrl(whatsappUri);
+    }
   }
 
   static Future<void> _launchEmail() async {
     final Uri emailLaunchUri = Uri(
       scheme: 'mailto',
-      path: 'mohamed.dev@example.com',
-      queryParameters: {'subject': 'تواصل من Portfolio App'},
+      path: 'akramatiia@gmail.com',
+      queryParameters: {
+        'subject': 'طلب تواصل - مبرمج Flutter متخصص',
+        'body': 'مرحباً،\n\nأرغب في التواصل معكم بخصوص فرصة عمل...',
+      },
     );
 
     if (await canLaunchUrl(emailLaunchUri)) {
@@ -84,14 +81,16 @@ class _ContactPageState extends State<ContactPage>
   }
 
   static Future<void> _launchPhone() async {
-    final Uri phoneLaunchUri = Uri(scheme: 'tel', path: '+201234567890');
-    if (await canLaunchUrl(phoneLaunchUri)) {
-      await launchUrl(phoneLaunchUri);
+    final Uri phoneUri = Uri.parse('tel:01154045964');
+    if (await canLaunchUrl(phoneUri)) {
+      await launchUrl(phoneUri);
     }
   }
 
   static Future<void> _launchLinkedIn() async {
-    final Uri linkedInUri = Uri.parse('https://linkedin.com/in/mohamed-dev');
+    final Uri linkedInUri = Uri.parse(
+      'https://linkedin.com/in/akram-atiia-2ba2a335b',
+    );
     if (await canLaunchUrl(linkedInUri)) {
       await launchUrl(linkedInUri);
     }
@@ -104,6 +103,13 @@ class _ContactPageState extends State<ContactPage>
     }
   }
 
+  static Future<void> _downloadCV() async {
+    final Uri cvUri = Uri.parse('https://drive.google.com/your-cv-link');
+    if (await canLaunchUrl(cvUri)) {
+      await launchUrl(cvUri);
+    }
+  }
+
   void _submitForm() {
     if (_nameController.text.isEmpty ||
         _emailController.text.isEmpty ||
@@ -113,7 +119,7 @@ class _ContactPageState extends State<ContactPage>
     }
 
     // محاكاة إرسال الرسالة
-    _showDialog('تم الإرسال', 'شكراً لتواصلك! سأرد عليك قريباً');
+    _showDialog('تم الإرسال', 'شكراً لتواصلك! سأرد عليك في أقرب وقت ممكن');
 
     // مسح الحقول
     _nameController.clear();
@@ -126,7 +132,7 @@ class _ContactPageState extends State<ContactPage>
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(
           title,
           style: TextStyle(
@@ -145,9 +151,12 @@ class _ContactPageState extends State<ContactPage>
     );
   }
 
-  void _copyToClipboard(String text) {
-    // في التطبيق الحقيقي استخدم package:clipboard
-    _showDialog('تم النسخ', 'تم نسخ $text إلى الحافظة');
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _messageController.dispose();
+    super.dispose();
   }
 
   @override
@@ -159,130 +168,78 @@ class _ContactPageState extends State<ContactPage>
       textDirection: TextDirection.rtl,
       child: Scaffold(
         backgroundColor: Color(0xFF0A0A0A),
-        body: AnimatedBuilder(
-          animation: _animation,
-          builder: (context, child) {
-            return CustomScrollView(
-              physics: BouncingScrollPhysics(),
-              slivers: [
-                // الهيدر المميز
-                SliverAppBar(
-                  expandedHeight: isTablet ? 280 : 220,
-                  backgroundColor: Colors.transparent,
-                  elevation: 0,
-                  leading: Container(
-                    margin: EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: LinearGradient(
-                        colors: [Color(0xFF6A5ACD), Color(0xFF9370DB)],
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Color(0xFF6A5ACD).withOpacity(0.5),
-                          blurRadius: 15,
-                        ),
+        body: CustomScrollView(
+          physics: BouncingScrollPhysics(),
+          slivers: [
+            // الهيدر
+            SliverAppBar(
+              expandedHeight: isTablet ? 220 : 180,
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              leading: Container(
+                margin: EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: LinearGradient(
+                    colors: [Color(0xFF6A5ACD), Color(0xFF9370DB)],
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Color(0xFF6A5ACD).withOpacity(0.5),
+                      blurRadius: 10,
+                    ),
+                  ],
+                ),
+                child: IconButton(
+                  icon: Icon(Icons.arrow_back, color: Colors.white),
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ),
+              flexibleSpace: FlexibleSpaceBar(
+                title: Text(
+                  'لنعمل معاً! 👨‍💻',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: isTablet ? 22 : 18,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                background: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Color(0xFF6A5ACD).withOpacity(0.3),
+                        Colors.transparent,
                       ],
                     ),
-                    child: IconButton(
-                      icon: Icon(Icons.arrow_back, color: Colors.white),
-                      onPressed: () => Navigator.pop(context),
-                    ),
-                  ),
-                  flexibleSpace: FlexibleSpaceBar(
-                    title: Transform.translate(
-                      offset: Offset(0, (1 - _animation.value) * 20),
-                      child: Opacity(
-                        opacity: _animation.value,
-                        child: Text(
-                          'لنتواصل معاً',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: isTablet ? 28 : 22,
-                            fontWeight: FontWeight.w900,
-                            shadows: [
-                              Shadow(color: Color(0xFF6A5ACD), blurRadius: 20),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    background: Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            Color(0xFF6A5ACD).withOpacity(0.4),
-                            Colors.transparent,
-                          ],
-                        ),
-                      ),
-                      child: Center(
-                        child: Transform.scale(
-                          scale: 0.9 + (_animation.value * 0.2),
-                          child: Container(
-                            width: isTablet ? 140 : 100,
-                            height: isTablet ? 140 : 100,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: Color(0xFF6A5ACD),
-                                width: 3,
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Color(0xFF6A5ACD).withOpacity(0.4),
-                                  blurRadius: 25,
-                                  spreadRadius: 3,
-                                ),
-                              ],
-                              image: DecorationImage(
-                                image: AssetImage(
-                                  "assets/images/photo_2025-06-24_03-06-59.jpg",
-                                ),
-                                fit: BoxFit.cover,
-                                onError: (error, stackTrace) {
-                                  // صورة بديلة إذا لم توجد الصورة
-                                },
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
                   ),
                 ),
+              ),
+            ),
 
-                // المحتوى الرئيسي
-                SliverToBoxAdapter(
-                  child: Opacity(
-                    opacity: _animation.value,
-                    child: Transform.translate(
-                      offset: Offset(0, (1 - _animation.value) * 30),
-                      child: Padding(
-                        padding: EdgeInsets.all(isTablet ? 25 : 20),
-                        child: Column(
-                          children: [
-                            // النص الترحيبي
-                            _buildWelcomeText(isTablet),
-                            SizedBox(height: 30),
+            // المحتوى الرئيسي
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.all(isTablet ? 20 : 16),
+                child: Column(
+                  children: [
+                    // النص الترحيبي
+                    _buildWelcomeText(isTablet),
+                    SizedBox(height: 20),
 
-                            // طرق التواصل
-                            _buildContactMethods(isTablet),
-                            SizedBox(height: 40),
+                    // طرق التواصل
+                    _buildContactMethods(isTablet),
+                    SizedBox(height: 20),
 
-                            // نموذج التواصل
-                            _buildContactForm(isTablet),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
+                    // نموذج التواصل
+                    _buildContactForm(isTablet),
+                  ],
                 ),
-              ],
-            );
-          },
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -294,34 +251,39 @@ class _ContactPageState extends State<ContactPage>
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            Color(0xFF6A5ACD).withOpacity(0.1),
-            Color(0xFF9370DB).withOpacity(0.05),
+            Color(0xFF6A5ACD).withOpacity(0.15),
+            Color(0xFF9370DB).withOpacity(0.08),
           ],
         ),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Color(0xFF6A5ACD).withOpacity(0.2), width: 1),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Color(0xFF6A5ACD).withOpacity(0.3), width: 1),
       ),
       child: Column(
         children: [
           Text(
-            'لنبدأ مشروعك القادم! 🚀',
+            'مستعد للانضمام إلى فريقكم المتميز! 💼',
             style: TextStyle(
               color: Colors.white,
-              fontSize: isTablet ? 26 : 22,
+              fontSize: isTablet ? 20 : 18,
               fontWeight: FontWeight.bold,
               height: 1.3,
             ),
             textAlign: TextAlign.center,
           ),
-          SizedBox(height: 10),
+          SizedBox(height: 12),
           Text(
-            'أنا متاح دائمًا للحديث عن أفكارك الإبداعية ومشاريعك المستقبلية\nلنبني معاً شيئاً رائعاً!',
+            'مطور Flutter متخصص مع خبرة في:\n'
+            '• تطوير تطبيقات Mobile و Desktop\n'
+            '• قواعد البيانات (SQL Server, Firebase, Supabase)\n'
+            '• واجهات برمجية APIs وتكامل الأنظمة\n'
+            '• 26+ كورس متقدم في البرمجة والهندسة\n\n'
+            'جاهز للمقابلات الفورية والتحديات التقنية! 🚀',
             style: TextStyle(
               color: Colors.white70,
-              fontSize: isTablet ? 16 : 14,
+              fontSize: isTablet ? 14 : 12,
               height: 1.5,
             ),
-            textAlign: TextAlign.center,
+            textAlign: TextAlign.start,
           ),
         ],
       ),
@@ -332,21 +294,21 @@ class _ContactPageState extends State<ContactPage>
     return Column(
       children: [
         Text(
-          'طرق التواصل المباشر',
+          'طرق التواصل المباشر - جاهز للإجابة فوراً 📞',
           style: TextStyle(
             color: Colors.white,
-            fontSize: isTablet ? 22 : 20,
+            fontSize: isTablet ? 18 : 16,
             fontWeight: FontWeight.bold,
           ),
         ),
-        SizedBox(height: 20),
+        SizedBox(height: 16),
 
         GridView.builder(
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: isTablet ? 2 : 1,
-            crossAxisSpacing: 15,
-            mainAxisSpacing: 15,
-            childAspectRatio: isTablet ? 3.5 : 3.2,
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 12,
+            childAspectRatio: isTablet ? 3.2 : 3.0,
           ),
           shrinkWrap: true,
           physics: NeverScrollableScrollPhysics(),
@@ -360,116 +322,75 @@ class _ContactPageState extends State<ContactPage>
   }
 
   Widget _buildContactCard(ContactMethod contact, bool isTablet) {
-    return AnimatedBuilder(
-      animation: _animation,
-      builder: (context, child) {
-        return Transform.translate(
-          offset: Offset(0, (1 - _animation.value) * 20),
-          child: Opacity(
-            opacity: _animation.value,
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    contact.color.withOpacity(0.15),
-                    contact.color.withOpacity(0.05),
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                  color: contact.color.withOpacity(0.25),
-                  width: 1,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: contact.color.withOpacity(0.15),
-                    blurRadius: 15,
-                    offset: Offset(0, 8),
-                  ),
-                ],
-              ),
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(16),
-                  onTap: contact.action,
-                  splashColor: contact.color.withOpacity(0.2),
-                  highlightColor: contact.color.withOpacity(0.1),
-                  child: Padding(
-                    padding: EdgeInsets.all(16),
-                    child: Row(
-                      children: [
-                        Container(
-                          padding: EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            gradient: LinearGradient(
-                              colors: [
-                                contact.color,
-                                contact.color.withOpacity(0.7),
-                              ],
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: contact.color.withOpacity(0.3),
-                                blurRadius: 10,
-                                offset: Offset(0, 4),
-                              ),
-                            ],
-                          ),
-                          child: Icon(
-                            contact.icon,
-                            color: Colors.white,
-                            size: 20,
-                          ),
-                        ),
-                        SizedBox(width: 15),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                contact.title,
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: isTablet ? 16 : 14,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              SizedBox(height: 4),
-                              Text(
-                                contact.info,
-                                style: TextStyle(
-                                  color: Colors.white70,
-                                  fontSize: isTablet ? 13 : 12,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Icon(
-                          Icons.arrow_back_ios,
-                          color: contact.color,
-                          size: 16,
-                        ),
-                      ],
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            contact.color.withOpacity(0.15),
+            contact.color.withOpacity(0.05),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: contact.color.withOpacity(0.25), width: 1),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(12),
+          onTap: contact.action,
+          child: Padding(
+            padding: EdgeInsets.all(12),
+            child: Row(
+              children: [
+                Container(
+                  padding: EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                      colors: [contact.color, contact.color.withOpacity(0.7)],
                     ),
                   ),
+                  child: Icon(contact.icon, color: Colors.white, size: 16),
                 ),
-              ),
+                SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        contact.title,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: isTablet ? 14 : 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(height: 2),
+                      Text(
+                        contact.info,
+                        style: TextStyle(
+                          color: Colors.white70,
+                          fontSize: isTablet ? 11 : 10,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Icon(Icons.arrow_back_ios, color: contact.color, size: 12),
+              ],
             ),
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 
   Widget _buildContactForm(bool isTablet) {
     return Container(
-      padding: EdgeInsets.all(20),
+      padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
@@ -477,21 +398,21 @@ class _ContactPageState extends State<ContactPage>
             Color(0xFF9370DB).withOpacity(0.05),
           ],
         ),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Color(0xFF6A5ACD).withOpacity(0.2), width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'أرسل لي رسالة مباشرة',
+            'أرسل لي عرض العمل مباشرة 📩',
             style: TextStyle(
               color: Colors.white,
-              fontSize: isTablet ? 22 : 20,
+              fontSize: isTablet ? 18 : 16,
               fontWeight: FontWeight.bold,
             ),
           ),
-          SizedBox(height: 20),
+          SizedBox(height: 16),
 
           _buildFormField(
             controller: _nameController,
@@ -499,7 +420,7 @@ class _ContactPageState extends State<ContactPage>
             icon: Icons.person,
             isTablet: isTablet,
           ),
-          SizedBox(height: 15),
+          SizedBox(height: 12),
 
           _buildFormField(
             controller: _emailController,
@@ -508,35 +429,26 @@ class _ContactPageState extends State<ContactPage>
             isTablet: isTablet,
             keyboardType: TextInputType.emailAddress,
           ),
-          SizedBox(height: 15),
+          SizedBox(height: 12),
 
           _buildFormField(
             controller: _messageController,
-            label: 'رسالتك',
-            icon: Icons.message,
+            label: 'تفاصيل العرض / الوظيفة',
+            icon: Icons.work,
             isTablet: isTablet,
             maxLines: 4,
           ),
-          SizedBox(height: 25),
+          SizedBox(height: 20),
 
           // زر الإرسال
           Container(
             width: double.infinity,
-            height: 55,
+            height: 50,
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [Color(0xFF6A5ACD), Color(0xFF9370DB)],
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
               ),
               borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: Color(0xFF6A5ACD).withOpacity(0.4),
-                  blurRadius: 15,
-                  offset: Offset(0, 5),
-                ),
-              ],
             ),
             child: Material(
               color: Colors.transparent,
@@ -546,13 +458,13 @@ class _ContactPageState extends State<ContactPage>
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.send, color: Colors.white, size: 20),
-                    SizedBox(width: 10),
+                    Icon(Icons.send, color: Colors.white, size: 18),
+                    SizedBox(width: 8),
                     Text(
-                      'إرسال الرسالة',
+                      'إرسال العرض',
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 16,
+                        fontSize: 14,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -584,9 +496,9 @@ class _ContactPageState extends State<ContactPage>
         controller: controller,
         keyboardType: keyboardType,
         maxLines: maxLines,
-        style: TextStyle(color: Colors.white, fontSize: isTablet ? 15 : 14),
+        style: TextStyle(color: Colors.white, fontSize: isTablet ? 14 : 13),
         decoration: InputDecoration(
-          contentPadding: EdgeInsets.all(16),
+          contentPadding: EdgeInsets.all(14),
           labelText: label,
           labelStyle: TextStyle(color: Colors.white70),
           prefixIcon: Icon(icon, color: Color(0xFF6A5ACD)),

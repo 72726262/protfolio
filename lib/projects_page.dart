@@ -6,10 +6,13 @@ class ProjectsPage extends StatelessWidget {
   final List<Project> projects = [
     Project(
       name: 'SocialmediaAPP',
-
+      category: 'تطبيقات موبايل',
+      imageUrl: 'assets/images/project1.jpg',
+      fullDescription:
+          'هو تطبيق اجتماعي متكامل يجمع أفضل مميزات المنصات الاجتماعية في مكان واحد، مصمم لتجربة مستخدم فريدة ومتميزة.',
       technologies: [
         'Flutter - مع أحدث إصدار وبتصميم Material Design 3',
-        'Dart ',
+        'Dart',
         'Supabase - Backend-as-a-Service شامل',
         "PostgreSQL - قاعدة بيانات علاقية قوية",
         "Realtime Subscription - تحديث فوري للبيانات",
@@ -26,64 +29,172 @@ class ProjectsPage extends StatelessWidget {
         "Streams للبيانات الحية",
         "إدارة حالة باستخدام BLoC Pattern",
       ],
-      imageUrl: 'assets/images/project1.jpg',
-      fullDescription:
-          ' هو تطبيق اجتماعي متكامل يجمع أفضل مميزات المنصات الاجتماعية في مكان واحد، مصمم لتجربة مستخدم فريدة ومتميزة.',
-
+      projectUrl: 'https://github.com/username/taskapp',
       videoUrl:
           'https://drive.google.com/file/d/1P8Zo2umad6i-3_LdZ7jioWsQPRuHD-Ew/view?usp=drive_link',
-      projectUrl: 'https://github.com/username/taskapp',
-      category: 'تطبيقات موبايل',
+      challenges: [
+        'دمج ميزات متعددة في تطبيق واحد',
+        'إدارة الحالة المعقدة للتطبيق الاجتماعي',
+        'تحسين أداء التطبيق مع كميات كبيرة من البيانات',
+      ],
+      solutions: [
+        'استخدام Clean Architecture لفصل المسؤوليات',
+        'تطبيق BLoC Pattern لإدارة الحالة',
+        'تحسين الاستعلامات واستخدام Pagination',
+      ],
+      databaseSchema: [
+        'users - جدول المستخدمين',
+        'posts - جدول المنشورات',
+        'comments - جدول التعليقات',
+        'likes - جدول الإعجابات',
+        'follows - جدول المتابعات',
+      ],
+      supabaseFeatures: [
+        'Realtime Subscriptions - تحديثات فورية',
+        'Row Level Security - أمان متقدم',
+        'Storage - تخزين الصور والفيديوهات',
+        'Authentication - نظام مصادقة آمن',
+      ],
+      features: [
+        'إنشاء المنشورات والنصوص',
+        'مشاركة الصور والفيديوهات',
+        'نظام التعليقات والإعجابات',
+        'المتابعة والمتابعين',
+        'الملفات الشخصية القابلة للتخصيص',
+      ],
     ),
     Project(
       name: 'ChatApp',
-
-      technologies: [
-        'Flutter لبناء الواجهة وإدارة حالة التطبيق',
-        ' Supabase للمصادقة + قواعد البيانات + التخزين + Realtime',
-        'Cubit / Bloc لإدارة الحالة',
-        "Image Picker لرفع الصور",
-        "SharedPreferences لحفظ إعدادات المستخدم الثي",
-        " User authentication (Sign Up / Login)",
-        " Real-time messaging (instant updates)",
-        "Send images, text, or both",
-        "Edit & delete messages",
-        " Profile screen with editable name and profile photo",
-        "Light & dark mode with saved preferences",
-        "Clean, modern, responsive UI",
-        "Local storage via SharedPreferences",
-        "UI → Cubit/Bloc → Service Layer → Supabase AP",
-      ],
+      category: 'تطبيقات موبايل',
       imageUrl: 'assets/images/project1.jpg',
       fullDescription:
           'تجربة شات كاملة مع واجهة عصرية وأداء سريع واستخدام تقنيات حديثة',
-
+      technologies: [
+        'Flutter لبناء الواجهة وإدارة حالة التطبيق',
+        'Supabase للمصادقة + قواعد البيانات + التخزين + Realtime',
+        'Cubit / Bloc لإدارة الحالة',
+        "Image Picker لرفع الصور",
+        "SharedPreferences لحفظ إعدادات المستخدم",
+        "User authentication (Sign Up / Login)",
+        "Real-time messaging (instant updates)",
+        "Send images, text, or both",
+        "Edit & delete messages",
+        "Profile screen with editable name and profile photo",
+        "Light & dark mode with saved preferences",
+        "Clean, modern, responsive UI",
+        "Local storage via SharedPreferences",
+        "UI → Cubit/Bloc → Service Layer → Supabase API",
+      ],
+      projectUrl: 'https://github.com/username/taskapp',
       videoUrl:
           'https://drive.google.com/file/d/1PjN4pQ6i4S118Fft5iO_Y2UdDBif0xSv/view?usp=drive_link',
-      projectUrl: 'https://github.com/username/taskapp',
-      category: 'تطبيقات موبايل',
+      challenges: [
+        'ضمان تسليم الرسائل في الوقت الفعلي',
+        'إدارة الذاكرة مع المحادثات الطويلة',
+        'تزامن البيانات بين الأجهزة',
+      ],
+      solutions: [
+        'استخدام Supabase Realtime للرسائل الفورية',
+        'تنفيذ Pagination للرسائل القديمة',
+        'مزامنة البيانات عبر Supabase Subscriptions',
+      ],
+      databaseSchema: [
+        'users - جدول المستخدمين',
+        'conversations - جدول المحادثات',
+        'messages - جدول الرسائل',
+        'participants - جدول المشاركين',
+      ],
+      supabaseFeatures: [
+        'Realtime for instant messaging',
+        'Row Level Security for privacy',
+        'Storage for media files',
+        'Authentication for user management',
+      ],
+      features: [
+        'مراسلة فورية',
+        'مشاركة الصور',
+        'تحرير وحذف الرسائل',
+        'الملفات الشخصية القابلة للتعديل',
+        'وضع الليل والنهار',
+      ],
     ),
     Project(
-      name:
-          '  متجر اكتروني Online store : تطبيق المستخدم (Client App) : تطبيق الأدمن / الليدر (Admin App)  ',
+      name: 'متجر إلكتروني متكامل - E-Commerce App',
       category: 'تطبيقات موبايل',
       imageUrl: 'assets/images/project1.jpg',
       fullDescription:
-          "تطبيق المستخدم (Client App)يمكن للمستخدم تصفح المنتجات بسهولة.عرض تفاصيل كل منتج مع السعر والصورة.عرض المنتجات الاكثر مبيعا إضافة المنتجات إلى السلة وإرسال الطلب مباشرة.رؤيه معلوماته الشخصية والتعديل 🧑‍💼 تطبيق الأدمن / الليدر (AdminApp) يمكن من خلاله إضافة المنتجات مع الصور والأسعار.عرض كل الطلبات الواردة الاوردرات من المستخدمين بشكل لحظي (Realtime).إمكانية متابعة حالة الطلب وتأكيد التسليم",
+          'تطبيق متجر إلكتروني متكامل يعمل بـ Supabase كـ Backend كامل مع واجهتي مستخدم وأدمن',
       technologies: [
-        'Flutter',
-        'Dart',
-        'Firebase Auth',
-        'Cloud Firestore',
-        'Provider State Management',
-        'Google Maps API',
-        'Push Notifications',
-      ],
+        'Flutter - تطوير متعدد المنصات',
+        'Dart - لغة البرمجة الأساسية',
+        'Supabase Authentication - نظام المصادقة المتقدم',
+        'Supabase PostgreSQL - قاعدة البيانات العلاقية',
+        'Supabase Storage - تخزين الصور والملفات',
+        'Supabase Realtime - التحديثات اللحظية',
+        'Supabase Row Level Security - أمان على مستوى الصفوف',
+        'Provider State Management - إدارة حالة التطبيق',
 
-      videoUrl: 'رابط فيديو حقيقي',
-      projectUrl: 'رابط GitHub حقيقي',
+        'Stripe Payment - بوابة الدفع الإلكتروني',
+
+        'Push Notifications - الإشعارات الفورية',
+        'SQLite - التخزين المحلي للبيانات',
+        'Cached Network Image - تخزين الصور مؤقتاً',
+        'Shared Preferences - حفظ إعدادات المستخدم',
+        'Image Picker - اختيار الصور من المعرض',
+        'Camera - التقاط الصور بالكاميرا',
+
+        'WebView - عرض محتوى الويب',
+        'Localization - دعم اللغات المتعددة',
+        'Animation - حركات وتأثيرات متقدمة',
+        'Responsive Design - تصميم متجاوب',
+      ],
+      projectUrl: 'https://github.com/yourusername/ecommerce-supabase-app',
+      videoUrl: 'https://drive.google.com/file/d/your-video-link/view',
+      challenges: [
+        'تصميم نظام قاعدة بيانات علاقية متكامل',
+        'تنفيذ التحديثات اللحظية مع Supabase Realtime',
+        'إدارة أمان البيانات مع Row Level Security',
+        'دمج نظام الدفع مع الحفاظ على الأمان',
+      ],
+      solutions: [
+        'تصميم مخطط قاعدة بيانات محكم مع العلاقات',
+        'استخدام Supabase Realtime للبيانات الحية',
+        'تطبيق سياسات RLS مفصلة لكل جدول',
+        'دمج Stripe مع التحقق من الصحة من السيرفر',
+      ],
+      databaseSchema: [
+        'users - جدول المستخدمين',
+        'profiles - الملفات الشخصية',
+        'products - جدول المنتجات',
+        'categories - فئات المنتجات',
+        'orders - جدول الطلبات',
+        'order_items - عناصر الطلبات',
+        'reviews - التقييمات والمراجعات',
+        'favorites - المفضلات',
+        'cart_items - عناصر السلة',
+        'payments - المدفوعات',
+      ],
+      supabaseFeatures: [
+        'Row Level Security (RLS) - أمان على مستوى كل صف',
+        'Realtime Subscriptions - تحديثات فورية للبيانات',
+        'PostgreSQL - قاعدة بيانات علاقية كاملة',
+        'Storage - تخزين ملفات متقدم مع سياسات أمان',
+        'Authentication - مصادقة متعددة الخيارات',
+        'Edge Functions - دوال سحابية مخصصة',
+        'Database Triggers - محفزات قاعدة البيانات',
+      ],
+      features: [
+        'مصادقة متقدمة مع Supabase Auth',
+        'قاعدة بيانات علاقية حقيقية مع PostgreSQL',
+        'تحديثات لحظية للطلبات والبيانات',
+        'بحث ذكي في المنتجات',
+        'سلة تسوق متزامنة مع قاعدة البيانات',
+        'عملية دفع آمنة مع تكامل Stripe',
+        'نظام تقييم وتعليقات متكامل',
+        'إشعارات push فورية',
+        'واجهة مستخدم متجاوبة',
+      ],
     ),
-    // ... باقي المشاريع بنفس الطريقة
   ];
   @override
   Widget build(BuildContext context) {
